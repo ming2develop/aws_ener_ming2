@@ -27,7 +27,7 @@ export function SellDrawer({ open, onOpenChange }: SellDrawerProps) {
   const [isListingActive, setIsListingActive] = useState(false)
   const [calculatedEnergy, setCalculatedEnergy] = useState(0)
   const [calculatedProfit, setCalculatedProfit] = useState(0)
-  
+
   useEffect(() => {
     if (!open) {
       setStep('input')
@@ -38,25 +38,25 @@ export function SellDrawer({ open, onOpenChange }: SellDrawerProps) {
       setCalculatedProfit(0)
     }
   }, [open])
-  
+
   const handleCalculate = () => {
     if (!area || Number.parseFloat(area) <= 0) return
     setIsCalculating(true)
-    
+
     setTimeout(() => {
       const areaNum = Number.parseFloat(area)
+      // Calculate current surplus energy (more immediate value than monthly)
       const dailyEnergy = (areaNum * 0.15 * 5)
-      const monthlyEnergy = dailyEnergy * 30
-      const surplusEnergy = monthlyEnergy * 0.7
-      const profit = surplusEnergy * 250
-      
-      setCalculatedEnergy(Math.round(surplusEnergy * 10) / 10)
+      const currentSurplusEnergy = dailyEnergy * 0.4 // Assuming 40% is surplus right now
+      const profit = currentSurplusEnergy * 250
+
+      setCalculatedEnergy(Math.round(currentSurplusEnergy * 10) / 10)
       setCalculatedProfit(Math.round(profit))
       setIsCalculating(false)
       setStep('result')
     }, 1500)
   }
-  
+
   const handleActivateListing = () => {
     setIsListingActive(true)
     setStep('active')
@@ -76,7 +76,7 @@ export function SellDrawer({ open, onOpenChange }: SellDrawerProps) {
             잉여 에너지를 판매하고 수익을 얻으세요
           </DrawerDescription>
         </DrawerHeader>
-        
+
         <div className="px-4 pb-8">
           <AnimatePresence mode="wait">
             {/* Step 1: Input Area */}
@@ -95,7 +95,7 @@ export function SellDrawer({ open, onOpenChange }: SellDrawerProps) {
                   </div>
                   <span className="font-medium text-foreground">설치 면적 입력</span>
                 </div>
-                
+
                 {/* Area Input */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-foreground">
@@ -113,7 +113,7 @@ export function SellDrawer({ open, onOpenChange }: SellDrawerProps) {
                       m2
                     </span>
                   </div>
-                  
+
                   {/* Quick Select */}
                   <div className="flex gap-2">
                     {[10, 20, 50, 100].map((amount) => (
@@ -127,15 +127,15 @@ export function SellDrawer({ open, onOpenChange }: SellDrawerProps) {
                     ))}
                   </div>
                 </div>
-                
+
                 {/* Info Box */}
                 <div className="bg-secondary rounded-xl p-4 text-sm text-muted-foreground border border-border">
                   <p>
-                    설치 면적을 입력하면 예상 잉여 에너지와 수익을 계산해 드립니다.
-                    실제 수익은 날씨, 계절 등에 따라 달라질 수 있습니다.
+                    설치 면적을 입력하면 현재 판매 가능한 잉여 전력과 예상 수익을 계산해 드립니다.
+                    실제 수익은 일사량(날씨) 및 실시간 가격에 따라 달라질 수 있습니다.
                   </p>
                 </div>
-                
+
                 {/* Calculate Button */}
                 <button
                   onClick={handleCalculate}
@@ -156,7 +156,7 @@ export function SellDrawer({ open, onOpenChange }: SellDrawerProps) {
                 </button>
               </motion.div>
             )}
-            
+
             {/* Step 2: Result */}
             {step === 'result' && (
               <motion.div
@@ -173,27 +173,27 @@ export function SellDrawer({ open, onOpenChange }: SellDrawerProps) {
                   </div>
                   <span className="font-medium text-foreground">예상 수익 확인</span>
                 </div>
-                
+
                 {/* Results */}
                 <div className="space-y-3">
                   <div className="bg-secondary rounded-xl p-4 border border-border">
-                    <p className="text-sm text-muted-foreground mb-1">예상 잉여 에너지 (월)</p>
+                    <p className="text-sm text-muted-foreground mb-1">현재 잉여 전력</p>
                     <p className="text-2xl font-bold text-foreground">
                       {calculatedEnergy.toLocaleString()} <span className="text-base font-medium text-muted-foreground">kWh</span>
                     </p>
                   </div>
-                  
+
                   <div className="bg-primary rounded-xl p-4">
-                    <p className="text-sm text-primary-foreground/80 mb-1">예상 월 수익</p>
+                    <p className="text-sm text-primary-foreground/80 mb-1">예상 수익</p>
                     <p className="text-2xl font-bold text-primary-foreground">
                       {calculatedProfit.toLocaleString()}원
                     </p>
                     <p className="text-xs text-primary-foreground/70 mt-2">
-                      연간 약 {(calculatedProfit * 12).toLocaleString()}원 예상
+                      현재 가격 250원/kWh 기준 정산 금액
                     </p>
                   </div>
                 </div>
-                
+
                 {/* Toggle */}
                 <div className="bg-secondary rounded-xl p-4 border border-border flex items-center justify-between">
                   <div>
@@ -205,7 +205,7 @@ export function SellDrawer({ open, onOpenChange }: SellDrawerProps) {
                     onCheckedChange={setIsListingActive}
                   />
                 </div>
-                
+
                 {/* Activate Button */}
                 <button
                   onClick={handleActivateListing}
@@ -214,7 +214,7 @@ export function SellDrawer({ open, onOpenChange }: SellDrawerProps) {
                 >
                   판매 시작하기
                 </button>
-                
+
                 <button
                   onClick={() => setStep('input')}
                   className="w-full h-11 text-muted-foreground hover:text-foreground font-medium transition-colors text-sm"
@@ -223,7 +223,7 @@ export function SellDrawer({ open, onOpenChange }: SellDrawerProps) {
                 </button>
               </motion.div>
             )}
-            
+
             {/* Step 3: Active Listing */}
             {step === 'active' && (
               <motion.div
@@ -241,14 +241,14 @@ export function SellDrawer({ open, onOpenChange }: SellDrawerProps) {
                 >
                   <CheckCircle2 className="w-8 h-8 text-primary" />
                 </motion.div>
-                
+
                 <div className="text-center">
                   <h3 className="text-xl font-bold text-foreground">판매 리스팅 활성화됨!</h3>
                   <p className="text-muted-foreground text-sm mt-1">
                     트럭이 에너지를 수거하러 이동중입니다
                   </p>
                 </div>
-                
+
                 {/* Truck Info Card */}
                 <div className="bg-secondary rounded-xl p-4 border border-border space-y-4">
                   <div className="flex items-center gap-3">
@@ -260,7 +260,7 @@ export function SellDrawer({ open, onOpenChange }: SellDrawerProps) {
                       <p className="text-primary font-medium text-sm">ETA: 8분</p>
                     </div>
                   </div>
-                  
+
                   {/* Progress */}
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
@@ -276,14 +276,14 @@ export function SellDrawer({ open, onOpenChange }: SellDrawerProps) {
                       />
                     </div>
                   </div>
-                  
+
                   {/* Live Status */}
                   <div className="flex items-center gap-2 text-sm">
                     <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                     <span className="text-muted-foreground">실시간 위치 추적중</span>
                   </div>
                 </div>
-                
+
                 {/* Map Preview */}
                 <div className="relative h-[120px] bg-secondary rounded-xl overflow-hidden border border-border">
                   <div className="absolute inset-0 bg-[#161B22]">
@@ -303,19 +303,19 @@ export function SellDrawer({ open, onOpenChange }: SellDrawerProps) {
                         />
                       ))}
                     </div>
-                    
+
                     <div className="absolute bottom-1/4 right-1/4">
                       <MapPin className="w-5 h-5 text-primary" />
                     </div>
-                    
-                    <motion.div 
+
+                    <motion.div
                       className="absolute"
                       initial={{ top: '20%', left: '20%' }}
-                      animate={{ 
+                      animate={{
                         top: ['20%', '40%', '60%'],
                         left: ['20%', '50%', '65%'],
                       }}
-                      transition={{ 
+                      transition={{
                         duration: 4,
                         repeat: Number.POSITIVE_INFINITY,
                         repeatType: 'reverse'
@@ -327,7 +327,7 @@ export function SellDrawer({ open, onOpenChange }: SellDrawerProps) {
                     </motion.div>
                   </div>
                 </div>
-                
+
                 <button
                   onClick={() => onOpenChange(false)}
                   className="w-full h-14 bg-secondary hover:bg-secondary/80 text-foreground font-bold text-base rounded-xl transition-all active:scale-[0.98] border border-border"
