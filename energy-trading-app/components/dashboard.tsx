@@ -7,6 +7,7 @@ import { PriceChart } from './price-chart'
 import { BuyDrawer } from './buy-drawer'
 import { SellDrawer } from './sell-drawer'
 import { NotificationDrawer } from './notification-drawer'
+import { HistoryDrawer } from './history-drawer'
 import { useEffect } from 'react'
 import { useNotifications } from './notification-context'
 
@@ -18,6 +19,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
   const [buyDrawerOpen, setBuyDrawerOpen] = useState(false)
   const [sellDrawerOpen, setSellDrawerOpen] = useState(false)
   const [notificationOpen, setNotificationOpen] = useState(false)
+  const [historyOpen, setHistoryOpen] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
 
   const { unreadCount, addNotification } = useNotifications()
@@ -82,7 +84,10 @@ export function Dashboard({ onLogout }: DashboardProps) {
             animate={{ opacity: 1, y: 0 }}
           >
             <button
-              onClick={() => setShowMenu(false)}
+              onClick={() => {
+                setShowMenu(false)
+                setHistoryOpen(true)
+              }}
               className="w-full text-left px-4 py-3 rounded-lg hover:bg-secondary transition-colors text-sm font-medium text-foreground"
             >
               내 거래 내역
@@ -165,14 +170,21 @@ export function Dashboard({ onLogout }: DashboardProps) {
         {/* Price Chart */}
         <PriceChart />
 
-        {/* Recent Activity */}
         <motion.div
           className="bg-card rounded-2xl p-5 border border-border"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.2 }}
         >
-          <h3 className="font-semibold text-foreground mb-4">최근 거래</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-foreground">최근 거래</h3>
+            <button
+              onClick={() => setHistoryOpen(true)}
+              className="text-xs font-medium text-primary hover:opacity-80 transition-opacity"
+            >
+              더보기
+            </button>
+          </div>
           <div className="space-y-3">
             {[
               { type: 'sell', amount: 5.2, price: 1300, time: '2시간 전' },
@@ -237,6 +249,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
       <BuyDrawer open={buyDrawerOpen} onOpenChange={setBuyDrawerOpen} />
       <SellDrawer open={sellDrawerOpen} onOpenChange={setSellDrawerOpen} />
       <NotificationDrawer open={notificationOpen} onOpenChange={setNotificationOpen} />
-    </div>
+      <HistoryDrawer open={historyOpen} onOpenChange={setHistoryOpen} />
+    </div >
   )
 }
