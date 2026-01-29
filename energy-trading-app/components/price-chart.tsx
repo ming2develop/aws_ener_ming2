@@ -45,7 +45,7 @@ function generateChartData(filter: TimeFilter) {
       time: filter === '1H'
         ? time.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
         : filter === '1D'
-          ? time.toLocaleTimeString('ko-KR', { hour: '2-digit' }) + '시'
+          ? time.toLocaleTimeString('ko-KR', { hour: '2-digit' })
           : time.toLocaleDateString('ko-KR', { weekday: 'short' }),
       price: Math.round(basePrice),
     })
