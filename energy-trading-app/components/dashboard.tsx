@@ -6,6 +6,9 @@ import { Menu, Bell, Zap, Battery, TrendingUp, ArrowUpRight, ArrowDownRight } fr
 import { PriceChart } from './price-chart'
 import { BuyDrawer } from './buy-drawer'
 import { SellDrawer } from './sell-drawer'
+import { NotificationDrawer } from './notification-drawer'
+import { useEffect } from 'react'
+import { useNotifications } from './notification-context'
 
 interface DashboardProps {
   onLogout: () => void
@@ -14,25 +17,41 @@ interface DashboardProps {
 export function Dashboard({ onLogout }: DashboardProps) {
   const [buyDrawerOpen, setBuyDrawerOpen] = useState(false)
   const [sellDrawerOpen, setSellDrawerOpen] = useState(false)
+  const [notificationOpen, setNotificationOpen] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
+
+  const { unreadCount, addNotification } = useNotifications()
+
+  useEffect(() => {
+    // Demo notification (Silent - added to history but no toast)
+    const timer = setTimeout(() => {
+      addNotification({
+        title: '에너지 트럭 도착 완료',
+        description: '에너지 트럭이 지정된 장소에 도착했습니다. 지금 바로 거래를 시작하세요!',
+        type: 'success'
+      })
+    }, 8000)
+
+    return () => clearTimeout(timer)
+  }, [addNotification])
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Top Bar */}
-      <motion.header 
+      <motion.header
         className="sticky top-0 z-40 bg-background/95 backdrop-blur-lg border-b border-border"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
         <div className="flex items-center justify-between px-4 h-14">
-          <button 
+          <button
             onClick={() => setShowMenu(!showMenu)}
             className="p-2 rounded-xl hover:bg-secondary transition-colors relative"
           >
             <Menu className="w-5 h-5 text-foreground" />
           </button>
-          
+
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
               <Zap className="w-4 h-4 text-primary-foreground" />
@@ -41,33 +60,40 @@ export function Dashboard({ onLogout }: DashboardProps) {
               ENERGY TRUCK
             </span>
           </div>
-          
-          <button className="p-2 rounded-xl hover:bg-secondary transition-colors relative">
+
+          <button
+            onClick={() => setNotificationOpen(true)}
+            className="p-2 rounded-xl hover:bg-secondary transition-colors relative"
+          >
             <Bell className="w-5 h-5 text-foreground" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-primary text-[10px] font-bold text-primary-foreground rounded-full flex items-center justify-center border-2 border-background">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
           </button>
         </div>
-        
+
         {/* Dropdown Menu */}
         {showMenu && (
-          <motion.div 
+          <motion.div
             className="absolute top-14 left-4 bg-card rounded-xl shadow-2xl border border-border p-2 min-w-[160px] z-50"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <button 
+            <button
               onClick={() => setShowMenu(false)}
               className="w-full text-left px-4 py-3 rounded-lg hover:bg-secondary transition-colors text-sm font-medium text-foreground"
             >
               내 거래 내역
             </button>
-            <button 
+            <button
               onClick={() => setShowMenu(false)}
               className="w-full text-left px-4 py-3 rounded-lg hover:bg-secondary transition-colors text-sm font-medium text-foreground"
             >
               설정
             </button>
-            <button 
+            <button
               onClick={() => {
                 setShowMenu(false)
                 onLogout()
@@ -110,7 +136,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
             </div>
           </div>
         </motion.div>
-        
+
         {/* Current Price Card */}
         <motion.div
           className="bg-gradient-to-br from-primary to-primary/80 rounded-2xl p-5"
@@ -135,10 +161,10 @@ export function Dashboard({ onLogout }: DashboardProps) {
             <span className="text-xs text-primary-foreground/70">오늘 오전 대비</span>
           </div>
         </motion.div>
-        
+
         {/* Price Chart */}
         <PriceChart />
-        
+
         {/* Recent Activity */}
         <motion.div
           className="bg-card rounded-2xl p-5 border border-border"
@@ -155,9 +181,8 @@ export function Dashboard({ onLogout }: DashboardProps) {
             ].map((tx, i) => (
               <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                    tx.type === 'sell' ? 'bg-primary/10' : 'bg-secondary'
-                  }`}>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${tx.type === 'sell' ? 'bg-primary/10' : 'bg-secondary'
+                    }`}>
                     {tx.type === 'sell' ? (
                       <ArrowUpRight className="w-5 h-5 text-primary" />
                     ) : (
@@ -184,7 +209,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
       </main>
 
       {/* Action Footer */}
-      <motion.div 
+      <motion.div
         className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-lg border-t border-border z-50"
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -211,6 +236,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
       {/* Drawers */}
       <BuyDrawer open={buyDrawerOpen} onOpenChange={setBuyDrawerOpen} />
       <SellDrawer open={sellDrawerOpen} onOpenChange={setSellDrawerOpen} />
+      <NotificationDrawer open={notificationOpen} onOpenChange={setNotificationOpen} />
     </div>
   )
 }

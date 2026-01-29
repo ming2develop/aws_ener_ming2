@@ -3,12 +3,15 @@ import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { KakaoMapScript } from '@/components/kakao-map-script'
+import { ThemeProvider } from "@/components/theme-provider"
+import { NotificationProvider } from "@/components/notification-context"
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  // ... (existing metadata)
   title: 'Energy Truck - P2P 에너지 거래',
   description: 'P2P 에너지 거래 플랫폼 - 스마트하게 에너지를 사고팔고',
   generator: 'v0.app',
@@ -55,8 +58,12 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans antialiased bg-background text-foreground">
-        <KakaoMapScript />
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          <NotificationProvider>
+            <KakaoMapScript />
+            {children}
+          </NotificationProvider>
+        </ThemeProvider>
         <Analytics />
       </body>
     </html>
