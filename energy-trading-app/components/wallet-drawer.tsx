@@ -8,11 +8,11 @@ import {
     DrawerTitle,
     DrawerDescription,
 } from '@/components/ui/drawer'
-import { ArrowUpRight, ArrowDownRight, History, Calendar } from 'lucide-react'
+import { ArrowUpRight, ArrowDownRight, Wallet, Calendar, TrendingUp, Zap } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
-interface HistoryDrawerProps {
+interface WalletDrawerProps {
     open: boolean
     onOpenChange: (open: boolean) => void
 }
@@ -26,22 +26,52 @@ const transactions = [
     { id: 6, type: 'sell', amount: 12.0, price: 3000, date: '2024.01.22', time: '18:10', area: '제주 제주시' },
 ]
 
-export function HistoryDrawer({ open, onOpenChange }: HistoryDrawerProps) {
+export function WalletDrawer({ open, onOpenChange }: WalletDrawerProps) {
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
-            <DrawerContent className="max-h-[85vh] bg-background border-border">
+            <DrawerContent className="max-h-[90vh] bg-background border-border">
                 <DrawerHeader className="border-b border-border pb-4">
                     <DrawerTitle className="text-xl font-bold flex items-center gap-2 text-foreground">
-                        <History className="w-5 h-5 text-primary" />
-                        거래 내역
+                        <Wallet className="w-5 h-5 text-primary" />
+                        내 지갑
                     </DrawerTitle>
                     <DrawerDescription className="text-muted-foreground">
-                        내 모든 에너지 거래 기록을 확인할 수 있습니다.
+                        수익 현황과 에너지 거래 내역을 관리하세요.
                     </DrawerDescription>
                 </DrawerHeader>
 
                 <div className="overflow-y-auto px-4 py-2 pb-10">
-                    <div className="space-y-4 py-4">
+                    {/* Summary Cards */}
+                    <div className="grid grid-cols-2 gap-3 py-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="bg-primary/10 rounded-2xl p-4 border border-primary/20 space-y-1"
+                        >
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-primary uppercase tracking-wider">
+                                <TrendingUp className="w-3 h-3" />
+                                총 수익
+                            </div>
+                            <p className="text-lg font-bold text-foreground">42,420원</p>
+                            <p className="text-[10px] text-muted-foreground">누적 정산 금액</p>
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.1 }}
+                            className="bg-secondary/50 rounded-2xl p-4 border border-border space-y-1"
+                        >
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                                <Zap className="w-3 h-3" />
+                                충전 에너지
+                            </div>
+                            <p className="text-lg font-bold text-foreground">125.5 kWh</p>
+                            <p className="text-[10px] text-muted-foreground">누적 충전량</p>
+                        </motion.div>
+                    </div>
+
+                    <div className="space-y-4 py-2">
                         {/* Group by Date */}
                         {['오늘', '지난 기록'].map((group, groupIdx) => (
                             <div key={group} className="space-y-2">

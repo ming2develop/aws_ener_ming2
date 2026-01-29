@@ -7,7 +7,7 @@ import { PriceChart } from './price-chart'
 import { BuyDrawer } from './buy-drawer'
 import { SellDrawer } from './sell-drawer'
 import { NotificationDrawer } from './notification-drawer'
-import { HistoryDrawer } from './history-drawer'
+import { WalletDrawer } from './wallet-drawer'
 import { useEffect } from 'react'
 import { useNotifications } from './notification-context'
 
@@ -19,7 +19,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
   const [buyDrawerOpen, setBuyDrawerOpen] = useState(false)
   const [sellDrawerOpen, setSellDrawerOpen] = useState(false)
   const [notificationOpen, setNotificationOpen] = useState(false)
-  const [historyOpen, setHistoryOpen] = useState(false)
+  const [walletOpen, setWalletOpen] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
 
   const { unreadCount, addNotification } = useNotifications()
@@ -86,11 +86,11 @@ export function Dashboard({ onLogout }: DashboardProps) {
             <button
               onClick={() => {
                 setShowMenu(false)
-                setHistoryOpen(true)
+                setWalletOpen(true)
               }}
               className="w-full text-left px-4 py-3 rounded-lg hover:bg-secondary transition-colors text-sm font-medium text-foreground"
             >
-              내 거래 내역
+              내 지갑
             </button>
             <button
               onClick={() => setShowMenu(false)}
@@ -179,7 +179,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground">최근 거래</h3>
             <button
-              onClick={() => setHistoryOpen(true)}
+              onClick={() => setWalletOpen(true)}
               className="text-xs font-medium text-primary hover:opacity-80 transition-opacity"
             >
               더보기
@@ -249,7 +249,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
       <BuyDrawer open={buyDrawerOpen} onOpenChange={setBuyDrawerOpen} />
       <SellDrawer open={sellDrawerOpen} onOpenChange={setSellDrawerOpen} />
       <NotificationDrawer open={notificationOpen} onOpenChange={setNotificationOpen} />
-      <HistoryDrawer open={historyOpen} onOpenChange={setHistoryOpen} />
+      <WalletDrawer open={walletOpen} onOpenChange={setWalletOpen} />
     </div >
   )
 }
